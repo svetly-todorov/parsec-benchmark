@@ -19,7 +19,16 @@ done
 shift "$(($OPTIND - 1))"
 download_dir="${1:-.}"
 outdir="${2:-.}"
-url_base=https://github.com/cirosantilli/parsec-benchmark/releases/download/3.0
+## Replace the github user with the one from git remote -v
+if git remote -v | grep "git@"; then
+  # origin is ssh
+  git_origin_user=$(git remote -v | grep origin | grep fetch | awk '{print $2}' | sed 's/git@github.com://' | sed 's/\.git//')
+  url_base=https://github.com/${git_origin_user}/releases/download/3.0
+else
+  # origin is https
+  git_origin_user=$(git remote -v | grep origin | grep fetch | awk '{print $2}' | sed 's|https://github.com/||' | sed 's/\.git//' )
+  url_base=https://github.com/${git_origin_user}/releases/download/3.0
+fi
 basenames=''
 basenames="$basenames parsec-3.0-core.tar.gz"
 if "$sim"; then
