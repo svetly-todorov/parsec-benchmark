@@ -28,15 +28,14 @@ WORKDIR /opt/parsec
 # Copy the repo into the image
 COPY --exclude=wrap --exclude=Dockerfile . .
 
-# The next two lines unpack ./configure:
-# Configure parsec (install deps, unpack data)
-RUN bash -c "./get-inputs"
-
 # Install the dependencies from ./configure
 RUN apt-get install -y m4 x11proto-xext-dev libglu1-mesa-dev libxi-dev libxmu-dev libtbb-dev pkg-config gettext
 
 # Source env.sh and build benchmarks
 RUN bash -c "source env.sh && ./bin/parsecmgmt -a build -p all"
+
+# Install inputs
+RUN bash -c "./get-inputs -n"
 
 # Set entrypoint to enable easy invocation of parsecmgmt
 ENTRYPOINT ["/bin/bash", "-c", "source env.sh && exec parsecmgmt \"$@\"", "--"]
