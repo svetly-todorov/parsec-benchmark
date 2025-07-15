@@ -1,3 +1,5 @@
+# syntax=docker.io/docker/dockerfile:1.7-labs
+
 FROM ubuntu:22.04
 
 # Set non-interactive frontend
@@ -24,7 +26,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /opt/parsec
 
 # Copy the repo into the image
-COPY . .
+COPY --exclude=wrap --exclude=Dockerfile . .
 
 # The next two lines unpack ./configure:
 # Configure parsec (install deps, unpack data)
@@ -37,7 +39,7 @@ RUN apt-get install -y m4 x11proto-xext-dev libglu1-mesa-dev libxi-dev libxmu-de
 RUN bash -c "source env.sh && ./bin/parsecmgmt -a build -p all"
 
 # Set entrypoint to enable easy invocation of parsecmgmt
-ENTRYPOINT ["/bin/bash", "-c", ". /opt/parsec/env.sh && ./bin/parsecmgmt $@"]
+ENTRYPOINT ["/bin/bash", "-c", "source env.sh && exec parsecmgmt \"$@\"", "--"]
 
 # Example usage (from outside):
 # docker build -t spirals/parsec-3.0 .
