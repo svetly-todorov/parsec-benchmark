@@ -267,6 +267,10 @@ function process_args {
   default_nthreads="1"
   default_submit="time"
 
+  if command -v numactl &> /dev/null; then
+    default_submit="time numactl --membind=2"
+  fi
+
   # Usage
   usage="\
 Usage: $me -a ACTION [OPTION]...

@@ -2,14 +2,14 @@
 
 FROM parsec:native
 
-# Get environment variable with arguments for numactl
-ENV NUMACTL_ARGS=""
-
 # Install build chain
 RUN apt-get update && apt-get install -y numactl
 
+# Copy parsecmgmt
+COPY bin/parsecmgmt /opt/parsec/bin/parsecmgmt
+
 # Set entrypoint to enable easy invocation of parsecmgmt
-ENTRYPOINT ["/bin/bash", "-c", "source env.sh && exec numactl ${NUMACTL_ARGS} parsecmgmt \"$@\"", "--"]
+ENTRYPOINT ["/bin/bash", "-c", "source env.sh && exec parsecmgmt \"$@\"", "--"]
 
 # Example usage (from outside):
 # docker build -t spirals/parsec-3.0 .
